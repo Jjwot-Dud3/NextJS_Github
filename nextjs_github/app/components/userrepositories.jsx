@@ -1,46 +1,76 @@
-"use client";
-import React, { useState } from 'react';
-import { Octokit } from '@octokit/core';
+"use client"
+import React, { useState, useEffect } from 'react';
+import { Octokit } from 'octokit';
 import SearchIcon from '../components/searchicon';
 
-const UserRepositories = () => {
-  const [username, setUsername] = useState('');
-  const [repositories, setRepositories] = useState([]);
+export default function UserRepositories  () {
+  const [allRepositories, setAllRepositories] = useState([]);
+  const [repositoryName, setRepositoryName] = useState('');
+  const [filteredRepositories, setFilteredRepositories] = useState([]);
 
-  const handleSearch = async () => {
-    try {
-      const octokit = new Octokit();
-      const response = await octokit.request(`/users/${username}/repos`);
-      setRepositories(response.data);
-    } catch (error) {
-      console.error('Error fetching repositories:', error.message);
+  useEffect(() => {
+    const octokit = new Octokit();
+    
+    // Fetch all users and their repositories
+    octokit
+    .request('/users')
+    .then(async (response) => {
+      const users = response.data;
+      const repositoriesPromises = users.map(async (user) => {
+        const userRepos = await octokit.request(`/users/${user.login}/repos`);
+        return {
+          user: user.login,
+          repositories: userRepos.data,
+        };
+      });
+      const repositories = await Promise.all(repositoriesPromises);
+      setAllRepositories(repositories);
+    })
+    .catch((error) => {
+      console.error('Error fetching users and repositories:', error.message);
+    });
+}, []);
+
+  // Filter repositories based on the searched username
+  useEffect(() => {
+    if (repositoryName === '') {
+      setFilteredRepositories(allRepositories);
+    } else {
+      const filtered = allRepositories.filter((repoEntry) =>
+        repoEntry.repositories.some((repo) => repo.name.includes(repositoryName))
+      );
+      setFilteredRepositories(filtered);
     }
-  };
+  }, [repositoryName, allRepositories]);
 
   return (
-    <div className="p-6 ">
-      <div className=" justify-center text-center mb-4">
+    <div className="p-6 flex flex-col items-center mt-0">
+      <div className="justify-center text-center mb-4">
         <div className="rounded-xl bg-gray-400 p-4 flex w-full">
           <input
             type="text"
-            placeholder="Enter GitHub username..."
-            className="w-full bg-transparent outline-none text-black"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Search GitHub username..."
+            className="w-full py-2 px-3 outline-none text-gray-800 placeholder-gray-600 rounded"
+            value={repositoryName}
+            onChange={(e) => setRepositoryName(e.target.value)}
           />
           <button
             className="ml-4 focus:outline-none"
-            onClick={handleSearch}
+            onClick={() => setRepositoryName('')}
           >
-            <SearchIcon />
+            Clear
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        {repositories.map((repo) => (
-          <div key={repo.id} className="bg-white p-4 rounded shadow-md">
-            <h3 className="text-lg font-semibold mb-2 text-black">Owner: {repo.owner.login}</h3>
-            <p className="text-black">{repo.name}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {filteredRepositories.map((repoEntry) => (
+          <div key={repoEntry.user} className="bg-white p-4 rounded shadow-md">
+            <h3 className="text-lg font-semibold mb-2 text-black">User: {repoEntry.user}</h3>
+            <ul>
+              {repoEntry.repositories.map((repo) => (
+                <li key={repo.id} className="text-black">{repo.name}</li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
@@ -48,4 +78,4 @@ const UserRepositories = () => {
   );
 };
 
-export default UserRepositories;
+

@@ -2,7 +2,8 @@
 import React from 'react';
 import {signIn, useSession} from "next-auth/react";
 import Image from "next/image";
-import github_icon from "../app/icons/github_icon.png"
+import github_icon from "../icons/github_icon.png"
+import { redirect } from "next/navigation";
 
 const LoginComponent = () => {
 
@@ -10,7 +11,14 @@ const LoginComponent = () => {
   // const handleCopy = (event) => {
   //   event.preventDefault(); // Prevent default copy behavior
   // };
+  //const router = useRouter();
+  if(data.status === "authenticated"){
+      return(
+        redirect('/repos')
+      );
+  }
   return (
+    
     <div className="flex items-center justify-center min-h-screen">
       
       <div className="bg-white p-8 rounded shadow-md w-64">

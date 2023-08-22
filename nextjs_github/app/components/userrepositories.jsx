@@ -2,11 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Octokit } from 'octokit';
 import SearchIcon from '../components/searchicon';
+import { useSession } from 'next-auth/react';
+import {redirect} from 'next/navigation'
 
 export default function UserRepositories  () {
   const [allRepositories, setAllRepositories] = useState([]);
   const [repositoryName, setRepositoryName] = useState('');
   const [filteredRepositories, setFilteredRepositories] = useState([]);
+  const data = useSession();
 
   useEffect(() => {
     const octokit = new Octokit();
@@ -42,6 +45,12 @@ export default function UserRepositories  () {
       setFilteredRepositories(filtered);
     }
   }, [repositoryName, allRepositories]);
+
+  if(data.status !== "authenticated"){
+    return(
+      redirect('/')
+    );
+  }
 
   return (
     <div className="p-6 flex flex-col items-center mt-0">

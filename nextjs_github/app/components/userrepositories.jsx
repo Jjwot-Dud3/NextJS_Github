@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Octokit } from 'octokit';
 import SearchIcon from '../components/searchicon';
 import { useSession } from 'next-auth/react';
-import {redirect} from 'next/navigation'
+import {redirect} from 'next/navigation';
+import Link from 'next/link';
 
 export default function UserRepositories  () {
   const [allRepositories, setAllRepositories] = useState([]);
@@ -77,7 +78,14 @@ export default function UserRepositories  () {
             <h3 className="text-lg font-semibold mb-2 text-black">User: {repoEntry.user}</h3>
             <ul>
               {repoEntry.repositories.map((repo) => (
-                <li key={repo.id} className="text-black">{repo.name}</li>
+                <li key={repo.id} className="text-black">
+                  <Link
+                    href={`/repos/[owner]/[repoName]`}
+                    as={`/repos/${repo.owner.login}/${repo.name}`}
+                  >
+                    <li key={repo.id} className="text-black">{repo.name}</li>
+                  </Link>
+                </li>
               ))}
             </ul>
           </div>

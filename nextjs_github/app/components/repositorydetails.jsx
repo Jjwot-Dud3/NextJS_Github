@@ -1,24 +1,31 @@
+"use client"
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { Octokit } from '@octokit/rest';
+import { useSearchParams } from 'next/navigation';
+import { Octokit } from 'octokit';
 
-export default function RepositoryDetails() {
-  const router = useRouter();
-  const { owner, repoName } = router.query;
+export default function RepositoryDetails({params}) {
+  const  owner  = params.owner
+  const repoName = params.reponame
   const [repoData, setRepoData] = useState(null);
+  console.log(owner)
+  console.log(repoName)
 
   useEffect(() => {
     const octokit = new Octokit({
         clientId: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET, 
+        
     });
-
-    octokit.repos.get({
-      owner,
-      repo: repoName,
+   
+    octokit.request('GET /users/{owner}/repos',{
+        owner: owner,
+        headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
     })
     .then(response => {
-      setRepoData(response.data);
+      setRepoData(response.data.find(repo => repo.name === repoName));
+      console.log(response.data.find(repo => repo.name === repoName))
     })
     .catch(error => {
       console.error('Error fetching repository data:', error);
@@ -32,7 +39,12 @@ export default function RepositoryDetails() {
           <h3 className="text-lg font-semibold mb-2 text-black">Repository Details</h3>
           <p className="text-black">Owner: {owner}</p>
           <p className="text-black">Repository Name: {repoData.name}</p>
-          {/* Include more details from repoData as needed */}
+          <p className="text-black">Repository Id: {repoData.id}</p>
+          <p className="text-black">Repository Url: {repoData.html_url}</p>
+          <p className="text-black">Is Private?: {repoData.private== false ? "False": "True"}</p>
+          <p className="text-black">Created: {repoData.created_at.split("T")[0]}</p>
+          <p className="text-black">Last Updated: {repoData.updated_at.split("T")[0]}</p>
+          <p className="text-black">Homepage: {repoData.homepage}</p>
         </div>
       )}
     </div>

@@ -83,7 +83,7 @@ export default function UserRepositories  () {
                     href={`/repos/[owner]/[repoName]`}
                     as={`/repos/${repo.owner.login}/${repo.name}`}
                   >
-                    <li key={repo.id} className="text-black">{repo.name}</li>
+                    <li key={repo.id} className="text-black hover:text-purple-300 transition">{repo.name}</li>
                   </Link>
                 </li>
               ))}

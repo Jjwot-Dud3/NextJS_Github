@@ -1,6 +1,7 @@
 import React from 'react';
 import RepositoryDetails from '../../../components/RepositoryDetails';
 
+//Recibe los parametros desde el url con ruta dinamica
 export default function RepositoryDetailsPage ({params}) {
     return(
         <div>

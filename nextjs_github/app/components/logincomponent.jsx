@@ -8,10 +8,7 @@ import { redirect } from "next/navigation";
 const LoginComponent = () => {
 
   const data = useSession();
-  // const handleCopy = (event) => {
-  //   event.preventDefault(); // Prevent default copy behavior
-  // };
-  //const router = useRouter();
+  //Revisa si esta autenticado la sesion para hacer la redireccion al buscador de repositorios
   if(data.status === "authenticated"){
       return(
         redirect('/repos')

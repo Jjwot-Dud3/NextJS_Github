@@ -14,6 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+        {/*Wrapper del Provider para la autenticacion de la aplicacion completa y poder pasar la sesion a las vistas */}
         <NextAuthProvider>
           <NavBar/>
           <div>{children}</div>

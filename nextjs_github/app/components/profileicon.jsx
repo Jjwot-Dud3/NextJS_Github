@@ -5,6 +5,7 @@ import Image from "next/image";
 
 export default function ProfileIcon(){
     const{data: session, status} = useSession();
+    //Revisa si esta aunteticado para mostrar la foto de perfil del usuario y su nombre como texto alternativo
     if (status === "authenticated"){
         return (
             <div className="flex gap-4">

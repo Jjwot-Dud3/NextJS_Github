@@ -15,18 +15,20 @@ export default function UserRepositories  () {
   useEffect(() => {
     const octokit = new Octokit();
     
-    // Fetch all users and their repositories
+    // Busca todo los usuarios del API de github
     octokit
     .request('/users')
     .then(async (response) => {
       const users = response.data;
       const repositoriesPromises = users.map(async (user) => {
+        //Luego busca todos los repositorios de cada usuario encontrado y se lo asigna al subarreglo
         const userRepos = await octokit.request(`/users/${user.login}/repos`);
         return {
           user: user.login,
           repositories: userRepos.data,
         };
       });
+      //Ejecuta todas las llamdas y espera que todas den respuesta
       const repositories = await Promise.all(repositoriesPromises);
       setAllRepositories(repositories);
     })
@@ -35,7 +37,7 @@ export default function UserRepositories  () {
     });
 }, []);
 
-  // Filter repositories based on the searched username
+  // Filtra los repositorios mostrado en base al campo de busquedad
   useEffect(() => {
     if (repositoryName === '') {
       setFilteredRepositories(allRepositories);
@@ -47,6 +49,7 @@ export default function UserRepositories  () {
     }
   }, [repositoryName, allRepositories]);
 
+  //Revisa si la session esta autenticada sino lo redireciona al home
   if(data.status !== "authenticated"){
     return(
       redirect('/')

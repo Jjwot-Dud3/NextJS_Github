@@ -25,13 +25,14 @@ export default function RepositoryDetails({ params }) {
         });
   
         try {
+            //Busca todos los repositorios de el usuario pasado (owner) en la vista anterior
           const response = await octokit.request('GET /users/{owner}/repos', {
             owner: owner,
             headers: {
               'X-GitHub-Api-Version': '2022-11-28',
             },
           });
-  
+          //Luego busca el repositorio pasado en la vista anterior (repoName)
           const matchingRepo = response.data.find((repo) => repo.name === repoName);
           setRepoData(matchingRepo);
           setIsRepoFavorite(await isFavorite(matchingRepo.id));
@@ -43,6 +44,7 @@ export default function RepositoryDetails({ params }) {
       fetchRepoData();
     }, [owner, repoName]);
   
+    //Inserta en la base de datos el repositorio selecionado
     const handleAddToFavorites = async () => {
       const data = {
         repo_id: repoData.id,
@@ -63,7 +65,8 @@ export default function RepositoryDetails({ params }) {
         console.error('Error adding repository to favorites:', error);
       }
     };
-  
+    
+    //Busca si el repositorio se encuentra en la base de datos para deshabilitar el boton de agregar
     const isFavorite = async (repoId) => {
       const resultList = await pb.collection('Repositories').getList(1, 50, {
         filter: `repo_id = ${repoId}`,
@@ -88,7 +91,7 @@ export default function RepositoryDetails({ params }) {
                 <FaPlus /> Add to Favorites
               </button>
             </div>
-            <p className="text-black">Owner: {owner}</p>
+            <p className="text-black">Owner: {owner}</p> 
                 <p className="text-black">Repository Name: {repoData.name}</p>
                 <p className="text-black">Repository Id: {repoData.id}</p>
                 <p className="text-black">Repository Url: {repoData.html_url}</p>
@@ -96,6 +99,14 @@ export default function RepositoryDetails({ params }) {
                 <p className="text-black">Created: {repoData.created_at.split("T")[0]}</p>
                 <p className="text-black">Last Updated: {repoData.updated_at.split("T")[0]}</p>
                 <p className="text-black">Homepage: {repoData.homepage?? "N/A"}</p>
+                {/*Campo owner:  nombre del repositorio */}
+                {/*Campo name: nombre del repositorio */}
+                {/*Campo id: id de github para el repositorio */}
+                {/*Campo html_url: url de github del repositorio */}
+                {/*Campo private: booleano que determina si el repositorio esta privado o publico. Tiene regla para mostrar el string en pantalla */}
+                {/*Campo created_at: fecha de cuando se creo el repositorio en github. Se hace split para eliminar la hora */}
+                {/*Campo updated_at: fecha de cuando se actualizo por ultima vez el repositorio en github. Se hace split para eliminar la hora  */}
+                {/*Campo homepage: la url del homepage del repositorio o proyecto este puede venir vacio */}
           </div>
         )}
         {successMessage && (

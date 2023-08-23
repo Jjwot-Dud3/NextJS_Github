@@ -1,6 +1,7 @@
 import NextAuth from "next-auth/next";
 import GitHubProvider from "next-auth/providers/github"
 
+//Define el provider de autenticacion(Github) y le setea los token del .env 
 const handler = NextAuth({
     providers: [
         GitHubProvider({

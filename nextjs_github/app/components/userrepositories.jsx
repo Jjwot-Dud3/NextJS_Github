@@ -59,7 +59,7 @@ export default function UserRepositories  () {
           <input
             type="text"
             placeholder="Search GitHub username..."
-            className="w-full py-2 px-3 outline-none text-gray-800 placeholder-gray-600 rounded"
+            className="w-full py-2 px-3 outline-none bg-transparent text-gray-800 placeholder-gray-600 rounded"
             value={repositoryName}
             onChange={(e) => setRepositoryName(e.target.value)}
           />
